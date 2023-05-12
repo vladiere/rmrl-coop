@@ -1,0 +1,45 @@
+footer {
+    display: flex;
+    padding: 5em 3rem;
+    margin-top: 100px;
+    background-color: rgb(196, 196, 196);
+    color: aliceblue;
+
+    .company {
+        flex: 1;
+        display: flex;
+        place-items: center;
+        img {
+            &:last-child {
+                height: 20%;
+            }
+        }
+    }
+
+    .about {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        place-items: center;
+        gap: 5px;
+        padding: 0 2rem;
+
+        span {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 10px 15px;
+            cursor: pointer;
+
+            &:hover {
+                border-bottom: 1px solid rgb(114, 114, 114);
+            }
+
+            &:last-child {
+                border: 0;
+                cursor: default;
+            }
+        }
+
+    }
+}
