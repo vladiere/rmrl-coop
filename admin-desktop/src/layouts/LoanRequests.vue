@@ -152,14 +152,14 @@
               <div class="row fit">
                 <div class="col-7">
                   <q-input
-                    v-model="form.presentaddress"
+                    v-model="form.present_address"
                     label="Present Address"
                     disable
                   />
                 </div>
                 <div class="col-3">
                   <q-input
-                    v-model="form.contactno"
+                    v-model="form.number"
                     label="Contact No."
                     disable
                   />
@@ -262,7 +262,7 @@
                   <q-input
                     disable
                     class="q-mx-sm"
-                    v-model="form.emailadd"
+                    v-model="form.email_add"
                     type="email"
                     label="Email Address"
                   />
@@ -270,7 +270,7 @@
               </div>
               <div class="row fit">
                 <div class="col">
-                  <q-input v-model="form.spousename" label="Name of Spouse" />
+                  <q-input disable v-model="form.spousename" label="Name of Spouse" />
                 </div>
                 <div class="col">
                   <q-input
@@ -290,7 +290,7 @@
                 <div class="col">
                   <q-input
                     disable
-                    v-model="form.employerbusiness"
+                    v-model="form.business_work"
                     label="Name of Employer/Business"
                   />
                 </div>
@@ -306,13 +306,13 @@
               <q-input
                 disable
                 class="q-mx-sm"
-                v-model="form.dataaddress"
+                v-model="form.work_address"
                 label="Address"
               />
               <div class="row">
                 <div class="col-7">
                   <q-input
-                    v-model="form.datacontactno"
+                    v-model="form.number"
                     label="Contact No."
                     disable
                   />
@@ -498,6 +498,7 @@ const $q = useQuasar();
 
 form.value = memberData.value;
 
+console.log(memberData.value)
 
 const getComakerData = async () => {
   const params = {

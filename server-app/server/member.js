@@ -186,9 +186,9 @@ function getCoMakerData (req, res) {
 }
 
 function loanRequests(req, res) {
-  const { id, position, amount, purpose, loanterm, modepayment, repaymentsched, yearstayed, tinno, fbacc, spousename, dataaddress, estatus, salaryincome, otherincome, noofyears, colastname, cofirstname, comiddlename, other, descrip } = req.body
+  const { id, position, amount, purpose, loanterm, modepayment, repaymentsched, yearstayed, tinno, fbacc, spousename, nodependents, dataaddress, estatus, salaryincome, otherincome, noofyears, colastname, cofirstname, comiddlename, other, descrip } = req.body
 
-  db.query('CALL sp_loanRequest(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [id, position, amount, purpose, loanterm, modepayment, repaymentsched, yearstayed, tinno, fbacc, spousename, dataaddress, estatus, salaryincome, otherincome, noofyears, colastname, cofirstname, comiddlename, other, descrip], (error, results) => {
+  db.query('CALL sp_loanRequest(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [id, position, amount, purpose, loanterm, modepayment, repaymentsched, yearstayed, tinno, fbacc, spousename, nodependents, dataaddress, estatus, salaryincome, otherincome, noofyears, colastname, cofirstname, comiddlename, other, descrip], (error, results) => {
     if (error) {
       res.status(500).json({ error: error })
     } else {

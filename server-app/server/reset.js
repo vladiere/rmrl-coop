@@ -1,15 +1,11 @@
-const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const smtpTransport = require('nodemailer-smtp-transport');
 const bcrypt = require('bcrypt');
 const db = require('./dbconfig');
 
 const user = process.env.EMAIL_USER
 const pass = process.env.EMAIL_PASS
 const server = process.env.EMAIL_SERVER
-const port = process.env.EMAIL_PORT
-const api = process.env.ELASTICEMAIL_API
 
 function sendEmail (req, res) {
     const { email } = req.body;
@@ -31,8 +27,7 @@ function sendEmail (req, res) {
                 } else {
 
                     const transporter = nodemailer.createTransport({
-                        host: server,
-                        port: port,
+                        service: server,
                         auth: {
                             user: user,
                             pass: pass
