@@ -107,7 +107,8 @@ module.exports = configure(function (/* ctx */) {
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
+        'Loading'
       ]
     },
 
@@ -189,7 +190,7 @@ module.exports = configure(function (/* ctx */) {
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
-
+        platform: 'win32'
         // Windows only
         // win32metadata: { ... }
       },

@@ -13,7 +13,7 @@ function sendEmail (req, res) {
     // check if email exists in database
     db.query('CALL sp_resetPassword(?,?,?)', [email,'',''], (err, results) => {
         if (err) {
-            res.status(500).json({ message: 'Error retrieving user from database' });
+            res.status(500).json({ message: 'Error retrieving user from database', err });
         } else if (results.length === 0) {
             res.json(results[0]);
         } else {

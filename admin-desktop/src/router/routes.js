@@ -1,6 +1,7 @@
 const routes = [
   {
     path: "/",
+    name: 'login',
     component: () => import("pages/LoginPage.vue"),
   },
   {
@@ -60,6 +61,11 @@ const routes = [
             name: "loan-request",
             component: () => import("layouts/LoanRequests.vue"),
           },
+          {
+            path: '/notifications',
+            name: "notifications",
+            component: () => import("components/Notifications.vue"),
+          }
         ],
       },
     ],

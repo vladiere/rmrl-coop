@@ -1,12 +1,21 @@
 <template>
   <div class="q-pa-md">
-    <div class="full-width">
+    <div class="full-width" >
       <div class="q-pa-lg row q-gutter-md">
         <span class="text-h4">Loan Request Notifications</span>
-        <q-btn class="bg-primary text-white" @click="print" label="Print form"/>
+        <q-btn
+          class="bg-primary text-white"
+          @click="print"
+          :disable="printState"
+          label="Print form"
+        />
       </div>
       <q-separator inset />
-      <div class="row full-width flex-center q-mt-xl q-gutter-md" ref="printTemplate" id="print-template">
+      <div
+        class="row full-width flex-center q-mt-xl q-gutter-md"
+        ref="printTemplate"
+        id="print-template"
+      >
         <div class="q-pa-md q-mb-xl">
           <span class="text-h4 text-capitalize">Application Form</span>
           <div class="q-ma-sm q-gutter-sm">
@@ -29,7 +38,12 @@
                   />
                 </div>
               </div>
-              <q-input autogrow disable v-model="form.purpose" label="Purpose" />
+              <q-input
+                autogrow
+                disable
+                v-model="form.purpose"
+                label="Purpose"
+              />
 
               <div class="row items-center">
                 <span class="text-subtitle1">Mode of payment</span>
@@ -158,11 +172,7 @@
                   />
                 </div>
                 <div class="col-3">
-                  <q-input
-                    v-model="form.number"
-                    label="Contact No."
-                    disable
-                  />
+                  <q-input v-model="form.number" label="Contact No." disable />
                 </div>
                 <div class="col-2">
                   <q-input
@@ -270,7 +280,11 @@
               </div>
               <div class="row fit">
                 <div class="col">
-                  <q-input disable v-model="form.spousename" label="Name of Spouse" />
+                  <q-input
+                    disable
+                    v-model="form.spousename"
+                    label="Name of Spouse"
+                  />
                 </div>
                 <div class="col">
                   <q-input
@@ -311,11 +325,7 @@
               />
               <div class="row">
                 <div class="col-7">
-                  <q-input
-                    v-model="form.number"
-                    label="Contact No."
-                    disable
-                  />
+                  <q-input v-model="form.number" label="Contact No." disable />
                 </div>
                 <div class="col-5 q-mt-md">
                   <span class="text-subtitle1">Employment Status</span>
@@ -457,7 +467,7 @@
                   color="secondary"
                   icon-right="send"
                   label="Accept Request Form"
-                  @click="acceptLoan(form.member_id)"
+                  @click="acceptLoan"
                 />
               </div>
             </div>
@@ -474,36 +484,38 @@ import {
   ref,
   onMounted,
   watchEffect,
-  computed,
   inject,
+  computed,
 } from "vue";
 import { api } from "src/boot/axios";
-import { useMemberStore } from "src/stores/memberStore";
 import { useQuasar } from "quasar";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useMemberStore } from "src/stores/memberStore";
+
 
 defineComponent({
   name: "LoanRequest",
 });
 
-const form = ref({});
-const memberData = inject("member");
-const coMakerdata = ref({});
-const printTemplate = ref(null)
-const state = ref(false)
-const loanState = ref(true)
-
 const $q = useQuasar();
+const form = ref({});
+const coMakerdata = ref({});
+const printTemplate = ref(null);
+const stylesLoaded = ref(false);
+const useStore = useMemberStore();
+const state = ref(false);
+const loanState = ref(true);
+const printState = ref(true);
+const memberData = computed(() => useStore.data);
 
 form.value = memberData.value;
 
-console.log(memberData.value)
 
 const getComakerData = async () => {
   const params = {
     co_id: form.value.comaker_id,
-    m_id: form.value.id
+    m_id: form.value.id,
   };
 
   await api.get("/get-comaker", { params }).then((res) => {
@@ -514,32 +526,31 @@ const getComakerData = async () => {
 const getLoanStatus = async () => {
   const params = {
     id: 0,
-    stats: 'accept'
+    stats: "accept",
   };
 
   await api.get("/get-loans", { params }).then((res) => {
-
     if (res.data.length != 0) {
       if (res.data[0].id == form.value.member_id) {
-        loanState.value = true
+        loanState.value = true;
       }
     } else {
       if (res.data[0].id == form.value.member_id) {
-        loanState.value = true
+        loanState.value = true;
       }
     }
-
   });
 };
 
-const acceptLoan = async (id) => {
+const acceptLoan = async () => {
+  console.log(form.value.id);
   const params = {
     amount: form.value.amount,
     loanterm: form.value.loanterm,
-    desc: 'accept'
+    desc: "accept",
   };
-  await api.put(`/accept-request/${id}`, params).then((res) => {
-    state.value = true
+  await api.put(`/accept-request/${form.value.id}`, params).then((res) => {
+    state.value = true;
     $q.notify({
       position: "top",
       type: "position",
@@ -548,23 +559,36 @@ const acceptLoan = async (id) => {
   });
 };
 
-
 const print = () => {
-  html2canvas(printTemplate.value).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
+  html2canvas(printTemplate.value).then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF();
-    pdf.addImage(imgData, 'PNG', 10, 10, 180, 240);
-    pdf.save('download.pdf');
+    pdf.addImage(imgData, "PNG", 10, 10, 180, 240);
+    pdf.save("download.pdf");
   });
 };
 
 onMounted(() => {
-  getLoanStatus()
+  getLoanStatus();
   getComakerData();
+
+  if (form.value.loan_status === "accept") {
+    loanState.value = false;
+    printState.value = false;
+  }
 });
 
 watchEffect(() => {
-  getLoanStatus()
+  getLoanStatus();
   getComakerData();
 });
+
+const loader = () => {
+  $q.loading.show();
+
+  setTimeout(() => {
+    stylesLoaded.value = true;
+    $q.loading.hide();
+  }, 500);
+};
 </script>

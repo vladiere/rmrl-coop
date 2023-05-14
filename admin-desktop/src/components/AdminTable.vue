@@ -148,15 +148,15 @@ const exportTable = () => {
 
 const getAdminList = async () => {
   const params = {
-    query: query.value === "" ? "" : query.value,
+    query: query.value || "",
     token: localStorage.getItem("token"),
   };
   await api
     .get("/get-admin-list", { params })
-    .then((result) => {
-      rows.value = result.data;
-    })
-    .catch((error) => console.error(error));
+      .then((result) => {
+        rows.value = result.data;
+      })
+      .catch((error) => console.error(error));
 };
 
 onMounted(() => {

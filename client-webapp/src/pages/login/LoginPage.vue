@@ -6,7 +6,7 @@
   <div className="login" v-if="stylesLoaded">
     <div className="card">
       <div className="top">
-        <span>Welcome to RMRL coop</span>
+        <span>Welcome to RMRL Coop</span>
         <p>
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Accusantium
           incidunt nulla minima veniam adipisci quis dolorem voluptas quod
@@ -55,7 +55,7 @@
 
           <q-space />
 
-          <q-btn dense flat icon="close" v-close-popup @click="text = ''">
+          <q-btn dense flat icon="close" v-close-popup @click="text.email = ''">
             <q-tooltip class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
@@ -96,7 +96,7 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted, defineComponent } from "vue";
 import { api } from "src/boot/axios";
-import { useQuasar, date, AppVisibility } from "quasar";
+import { useQuasar, date } from "quasar";
 
 defineComponent({
   name: "LoginPage",
@@ -109,6 +109,10 @@ const form = ref({
   browser: "",
 });
 
+const text = ref({
+  email: "",
+});
+
 const $q = useQuasar();
 const timestamp = Date.now();
 
@@ -116,9 +120,6 @@ const router = useRouter();
 const browserName = ref("");
 const resetpass = ref(false);
 const batt = ref(null);
-const text = ref({
-  email: "",
-});
 
 const formattedDate = date.formatDate(timestamp, "MMMM Do, YYYY");
 const formattedTime = date.formatDate(timestamp, "hh:mm A");
@@ -225,7 +226,7 @@ const sendResetReq = async () => {
         message: res.data.message,
       });
     });
-    text.value.email = ''
+    text.value.email = "";
     $q.loading.hide();
   } else {
     $q.notify({

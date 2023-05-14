@@ -5,7 +5,7 @@
         <div class="q-pa-md text-bold text-h5 flex-center">
           <span>Account Information</span>
         </div>
-        <q-separator inset/>
+        <q-separator inset />
         <div class="full-width column q-pa-lg text-h6 q-gutter-sm">
           <span
             >Fullname: {{ capitalize(user.value.firstname) }}
@@ -18,7 +18,7 @@
 
           <q-btn
             label="Apply for Loan"
-            style="width: 15%;"
+            style="width: 15%"
             color="secondary"
             icon-right="description"
             @click="applyForLoan"
@@ -26,7 +26,7 @@
         </div>
       </div>
 
-      <q-separator inset/>
+      <q-separator inset />
 
       <div class="q-pa-md">
         <q-table
@@ -41,12 +41,19 @@
 </template>
 
 <script setup>
-import { defineComponent, ref, inject, provide, computed, onMounted, watchEffect } from "vue";
-import { useQuasar  } from "quasar";
+import {
+  defineComponent,
+  ref,
+  inject,
+  provide,
+  computed,
+  onMounted,
+  watchEffect,
+} from "vue";
+import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { api } from "src/boot/axios";
-import { useUserStore } from 'src/stores/userdata'
-
+import { useUserStore } from "src/stores/userdata";
 
 defineComponent({
   name: "LoanPage",
@@ -54,19 +61,16 @@ defineComponent({
 
 const $q = useQuasar();
 const stylesLoaded = ref(false);
-const user = inject('user')
-const router = useRouter()
-const rows = ref({})
-const userStore = useUserStore()
+const user = inject("user");
+const router = useRouter();
+const rows = ref({});
+const userStore = useUserStore();
 
-const userData = computed(() => userStore.data)
+const userData = computed(() => userStore.data);
 
-$q.loading.show();
 
-setTimeout(() => {
-  stylesLoaded.value = true;
-  $q.loading.hide();
-}, 300);
+
+loader()
 
 const capitalize = (str) => {
   return str.toLowerCase().replace(/\b\w/g, function (char) {
@@ -115,36 +119,43 @@ const columns = [
 ];
 
 const applyForLoan = () => {
-  userStore.setDesc('regular loan')
+  userStore.setDesc("regular loan");
 
-  router.push('loan-application')
-}
+  router.push("loan-application");
+};
 
 onMounted(() => {
-  fetchTransactions()
-})
+  fetchTransactions();
+});
 
 watchEffect(() => {
   if (stylesLoaded.value) {
-    fetchTransactions()
+    fetchTransactions();
   }
-})
+});
 
 const fetchTransactions = async () => {
   const params = {
     id: userData.value.id,
-    stats: 'accept'
-  }
+    stats: "accept",
+  };
 
-  await api.get('/get-loans', { params })
-    .then(res => {
-
-      rows.value = res.data
+  await api
+    .get("/get-loans", { params })
+    .then((res) => {
+      rows.value = res.data;
     })
-    .catch(err => console.error(err))
-}
+    .catch((err) => console.error(err));
+};
 
+const loader = () => {
+  $q.loading.show();
 
+  setTimeout(() => {
+    stylesLoaded.value = true;
+    $q.loading.hide();
+  }, 300);
+};
 </script>
 
 <style scoped></style>

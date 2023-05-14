@@ -11,23 +11,34 @@ let form = ref({
   username: "",
   password: "",
   ipaddress: "",
-  browser: ""
+  browser: "",
 });
 
 const dense = ref(false);
 const accept = ref(false);
 const isPwd = ref(true);
-
+const stylesloaded = ref(false);
 
 watch(() => {
   localStorage.setItem("accept", accept.value);
 });
 
 onMounted(() => {
-  getLocation()
-  getBrowser()
+  getLocation();
+  getBrowser();
+
+  const autoAccept = localStorage.getItem("accept")
+
+  // if (autoAccept) {
+  //   $q.loading.show()
+
+  //   form.value.username = localStorage.getItem('username')
+  //   form.value.password = localStorage.getItem('password')
+
+  //   handleSubmit()
+  // }
+
   accept.value = localStorage.getItem("accept");
-  localStorage.removeItem("token");
 
   if (localStorage.getItem("accept")) {
     if (
@@ -60,7 +71,8 @@ const handleSubmit = async () => {
       await api
         .post("/loginAdmin", form.value, config)
         .then((res) => {
-          form.value.ipaddress = form.value.ipaddress !== '' ? form.value.ipaddress : 'offline'
+          form.value.ipaddress =
+            form.value.ipaddress !== "" ? form.value.ipaddress : "offline";
           if (res.data.status == 200) {
             localStorage.setItem("token", res.data.token);
             if (accept.value) {
@@ -70,6 +82,8 @@ const handleSubmit = async () => {
               localStorage.removeItem("username");
               localStorage.removeItem("password");
             }
+
+            $q.loading.hide();
             router.push("home");
           }
         })
@@ -99,32 +113,47 @@ const handleSubmit = async () => {
 };
 
 const getBrowser = () => {
-  if (window.navigator.userAgent.indexOf('MSIE') !== -1) {
-    form.value.browser = 'internet explorer';
-  } else if (window.navigator.userAgent.indexOf('Firefox') !== -1) {
-    form.value.browser = 'mozilla firefox';
-  } else if (window.navigator.userAgent.indexOf('Chrome') !== -1) {
-    form.value.browser = 'google chrome';
-  } else if (window.navigator.userAgent.indexOf('Safari') !== -1) {
-    form.value.browser = 'apple safari';
-  } else if (window.navigator.userAgent.indexOf('Opera') !== -1) {
-    form.value.browser = 'opera';
+  if (window.navigator.userAgent.indexOf("MSIE") !== -1) {
+    form.value.browser = "internet explorer";
+  } else if (window.navigator.userAgent.indexOf("Firefox") !== -1) {
+    form.value.browser = "mozilla firefox";
+  } else if (window.navigator.userAgent.indexOf("Chrome") !== -1) {
+    form.value.browser = "google chrome";
+  } else if (window.navigator.userAgent.indexOf("Safari") !== -1) {
+    form.value.browser = "apple safari";
+  } else if (window.navigator.userAgent.indexOf("Opera") !== -1) {
+    form.value.browser = "opera";
   } else {
-    form.value.browser = 'unknown browser';
+    form.value.browser = "unknown browser";
   }
-}
+};
 
 const getLocation = async () => {
-  await api.get('https://ipapi.co/json')
-    .then(res => {
-      form.value.ipaddress = res.data.ip
+  $q.loading.show()
+  try {
+    await api.get("https://ipapi.co/json").then((res) => {
+      $q.loading.hide()
+      stylesloaded.value = true
+      form.value.ipaddress = res.data.ip;
+    });
+  } catch (err) {
+    setTimeout(() => {
+      $q.loading.hide()
+      stylesloaded.value = true
+    }, 2000);
+    
+    $q.notify({
+      position: 'center',
+      type: 'negative',
+      message: 'No Internet connection'
     })
-}
+  }
+};
 
 </script>
 
 <template>
-  <div class="q-pa-md absolute-center row flex-center">
+  <div class="q-pa-md absolute-center row flex-center" v-if="stylesloaded">
     <div class="q-gutter-y-md column" style="width: 400px">
       <span class="text-dark text-bold text-h2 q-mb-md">RMRL Coop</span>
       <form class="q-gutter-lg" @submit.prevent="handleSubmit">

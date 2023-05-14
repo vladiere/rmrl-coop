@@ -334,12 +334,6 @@ const onReset = () => {
 // });
 
 const handleSubmit = async () => {
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  };
 
   const objProps = Object.values(form.value);
   let flag = false;
@@ -351,7 +345,7 @@ const handleSubmit = async () => {
   }
 
   if (flag) {
-    await api.post("/registerMember", form.value, config).then((res) => {
+    await api.post("/registerMember", form.value).then((res) => {
       if (res.data.status == 200) {
         onReset();
         $q.notify({

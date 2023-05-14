@@ -34,9 +34,8 @@ function loginmember(req, res) {
                   message: results[0][0].stat_ret
                 })
               } else {
-                
                 const token = createToken(results[1]);
-                const dbpass = results[1][0].password
+                const dbpass = results[0][0].password
                 
                 bcrypt.compare(password, dbpass, (err, dbres) => {
                     if (err) throw err;
@@ -63,14 +62,14 @@ function loginmember(req, res) {
                             }
                         })
                     } else {
-                        db.query('CALL sp_Authenticate_Admin(?,?,?,?)', [lastname, ipaddress, browser, 1], (error, results) => {
+                        db.query('CALL sp_Authenticate_Member(?,?,?,?)', [lastname, ipaddress, browser, 1], (error, results) => {
                             if (error) {
                                 res.status(500).json({ error: error.message });
                             } else {
                                 res.status(401).json({
                                     'status': 401,
                                     'statusText': 'Invalid',
-                                    'message': 'Wrong Password'
+                                    'message': results[0][0].ret_msg
                                 })
                             }
                         })
@@ -92,7 +91,6 @@ function registerMember(req, res) {
       if (error) {
         res.status(500).json({ error: error.message });
       } else {
-        console.log(results);
         res.status(200).json({ 
           'status': 200,
           'statusText': 'Success',
@@ -152,7 +150,6 @@ function updateMemberData (req, res) {
     if (error) {
       res.status(500).json({ error: error.message });
     } else {
-      console.log(results[0][0]);
       res.status(results[0][0].stat).json({ 
         'status': results[0][0].stat,
         'message': results[0][0].ret,
@@ -203,7 +200,8 @@ function loanRequests(req, res) {
 function updateLoanRequest (req, res) {
   const { id } = req.params
   const { amount, loanterm, desc } = req.body
-  console.log(desc)
+  console.log(id)
+
   db.query('CALL sp_acceptRequest(?,?,?,?)', [id, amount, loanterm, desc], (err, results) => {
     if (err) {
       res.status(500).json(err.message)
