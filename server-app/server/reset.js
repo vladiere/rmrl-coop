@@ -67,26 +67,36 @@ function sendEmail (req, res) {
 }
 
 function resetPassword(req, res) {
-    const { token, newPass } = req.body
+    const { token, newPass, id } = req.body
     
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(newPass, salt);
-
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-        if (err) {
-            res.json({ message: 'Invalid token'})
-        } else {
-            const { email } = decoded
-
-            db.query('CALL sp_resetPassword(?,?,?)', [email, hash, token], (err, results) => { 
-                if (err) {
-                    res.status(500).json(err)
-                } else {
-                    res.json({ message: results[0]})
-                }
-            })
-        }
-    })
+    console.log(token, newPass, id)
+    if (token === "") {
+        db.query('CALL sp_resetPassword(?,?,?,?)', ["", hash, "", id], (err, results) => { 
+            if (err) {
+                res.status(500).json(err)
+            } else {
+                res.json({ message: results[0]})
+            }
+        })
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+            if (err) {
+                res.json({ message: 'Invalid token'})
+            } else {
+                const { email } = decoded
+    
+                db.query('CALL sp_resetPassword(?,?,?,?)', [email, hash, token, id], (err, results) => { 
+                    if (err) {
+                        res.status(500).json(err)
+                    } else {
+                        res.json({ message: results[0]})
+                    }
+                })
+            }
+        })
+    }
 }
 
 

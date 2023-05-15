@@ -56,7 +56,7 @@
           <q-btn
             flat
             label="WITHDRAW"
-            @click="handleWithdrawDeposit('withdraw', columns)"
+            @click="handleWithdrawDeposit('withdraw')"
           />
           <q-btn
             flat
@@ -89,7 +89,7 @@ defineComponent({
 const $q = useQuasar();
 const tableRef = ref(null);
 const query = ref("");
-const amount = ref("");
+const amount = ref(0);
 const rows = ref([]);
 const selected = ref([]);
 const small = ref(false);
@@ -232,14 +232,29 @@ const getSelectedString = () => {
 const cancelDialog = () => {
   selected.value = []
   small.value = false
+  amount.value = 0
 }
 
-const handleWithdrawDeposit = (str) => {
-  console.log(selected)
+const handleWithdrawDeposit = async (str) => {
+  console.log(selected.value[0])
 
   const params = {
-
+    id: selected.value[0].member_id,
+    amount: amount.value,
+    desc: str
   }
+
+
+  await api.post('/withdraw-deposit', params)
+    .then(res => {
+      console.log(res.data[0])
+      $q.notify({
+        position: 'top',
+        style: 'positive',
+        message: res.data[0].st_msg
+      })
+
+    })
 }
 
 watchEffect(() => {

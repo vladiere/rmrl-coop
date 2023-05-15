@@ -14,6 +14,7 @@ function getMemberSavings (req, res) {
 
 function withdrawSavings (req, res) {
     const { id, amount, desc } = req.body
+    console.log(id, amount, desc)
     db.query('CALL sp_withdrawDeposit(?,?,?)', [id, amount, desc], (err, results) => {
         if (err) {
             console.error(err);

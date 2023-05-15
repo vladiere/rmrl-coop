@@ -49,10 +49,7 @@
         <q-card-section
           class="full-width row inline wrap justify-center items-center content-center"
         >
-          <form
-            class="g-gutter-lg fit"
-            @submit.prevent="handleSubmit"
-          >
+          <form class="g-gutter-lg fit" @submit.prevent="handleSubmit">
             <div class="q-pa-md example-row-equal-width">
               <div class="row q-py-md q-gutter-lg">
                 <div class="col">
@@ -226,6 +223,7 @@
                     class="q-pb-md"
                     v-model="form.password"
                     label="Password"
+                    @focus="generatePassword"
                     lazy-rules
                     :rules="[
                       (val) =>
@@ -286,6 +284,22 @@
       </q-card>
     </q-dialog>
   </div>
+  <q-dialog v-model="dialogVisible" style="max-width: 500px;">
+    <q-card>
+      <q-card-section class="q-pa-md">
+        <q-input v-model="copiedPassword" readonly dense />
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          color="primary"
+          icon="fas fa-clipboard"
+          @click="copyToClipboard"
+        />
+        <q-btn label="Close" color="secondary" @click="dialogVisible = false" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -305,6 +319,8 @@ const dialog = ref(false);
 const maximizedToggle = ref(true);
 const regex = /^(09|\+639|639)\d{9}$/;
 const isPwd = ref(true);
+const copiedPassword = ref("");
+const dialogVisible = ref(false);
 
 // const isValidNumber = (number) => {
 //   return regex.test(number);
@@ -326,15 +342,45 @@ const form = ref({
   share_capital: "",
 });
 
+const generatePassword = () => {
+  const length = 18; // Password length
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Characters to include in the password
+  let result = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    result += charset[randomIndex];
+  }
+
+  form.value.password = "RMRL-" + result;
+  copiedPassword.value = form.value.password;
+};
+
+const copyToClipboard = () => {
+  navigator.clipboard
+    .writeText(copiedPassword.value)
+    .then(() => {
+      $q.notify({
+        position: "top",
+        type: "positive",
+        message: 'Copied Successfully',
+      });
+      dialogVisible.value = false; // Close the dialog after copying to clipboard
+    })
+    .catch((error) => {
+      console.error("Failed to copy to clipboard:", error);
+    });
+};
+
 const onReset = () => {
-  form.value = '';
+  form.value = "";
 };
 // watch(() => {
 //   console.log(isValidNumber(form.value.number));
 // });
 
 const handleSubmit = async () => {
-
   const objProps = Object.values(form.value);
   let flag = false;
 
@@ -347,6 +393,7 @@ const handleSubmit = async () => {
   if (flag) {
     await api.post("/registerMember", form.value).then((res) => {
       if (res.data.status == 200) {
+        dialogVisible.value = true;
         onReset();
         $q.notify({
           position: "top",

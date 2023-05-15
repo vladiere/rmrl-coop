@@ -21,6 +21,22 @@ const routeGuard = ((to, from, next) => {
   }
 })
 
+const passGuard = ((to, from, next) => {
+  const requiresToken = to.meta.requiresToken;
+  const authToken = to.params.token;
+
+  if (requiresToken) {
+    if (!authToken) {
+      next({ name: "login" }); // Redirect to login page if token is missing
+    } else {
+      // Perform additional token validation if necessary
+      next();
+    }
+  } else {
+    next(); // No token required, proceed to the requested route
+  }
+})
+
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
@@ -37,7 +53,7 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach(routeGuard)
-
+  Router.beforeEach(passGuard);
   return Router
 })
 

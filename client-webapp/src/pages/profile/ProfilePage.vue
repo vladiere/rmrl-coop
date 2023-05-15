@@ -105,18 +105,7 @@
       <span class="text-h5">Password Settings</span>
       <q-form @submit.prevent="onSubmit" class="q-gutter-md" style="width: 50%">
         <q-input
-          type="password"
-          standout="bg-teal text-white"
-          v-model="changepassForm.oldpassword"
-          label="Old Password"
-          lazy-rules
-          :rules="[
-            (val) =>
-              (val !== null && val !== '') || 'Please enter your old password',
-          ]"
-        />
-        <q-input
-          type="password"
+          :type="isPwd ? 'password' : 'text'"
           standout="bg-teal text-white"
           v-model="changepassForm.newpassword"
           label="New Password"
@@ -126,9 +115,17 @@
               (val != null && val != '') || 'Please enter a new password',
             (val) => val.length > 8 || 'Password must be at least 8 characters',
           ]"
-        />
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
         <q-input
-          type="password"
+          :type="isPwd ? 'password' : 'text'"
           standout="bg-teal text-white"
           v-model="changepassForm.cnewpassword"
           label="Confirm New Password"
@@ -136,13 +133,22 @@
           :rules="[
             (val) =>
               (val != null && val != '') || 'Please confirm your new password',
-            (val) =>
-              val !== changepassForm.cnewpassword ||
-              'Confirm password does not match',
           ]"
-        />
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
 
-        <q-toggle v-model="showPass" label="Show Password" @click="isPwd = !isPwd"/>
+        <q-toggle
+          v-model="showPass"
+          label="Show Password"
+          @click="isPwd = !isPwd"
+        />
         <q-btn
           color="secondary"
           icon-right="keys"
@@ -157,26 +163,25 @@
 <script setup>
 import { defineComponent, ref, inject, onMounted, computed } from "vue";
 import { useQuasar } from "quasar";
-import { useUserStore } from "src/stores/userdata";
+import { api } from "src/boot/axios";
 
 defineComponent({
   name: "ProfilePage",
 });
 
 const userdata = ref({});
-const useStore = useUserStore();
-const isPwd = ref(false)
+const isPwd = ref(true);
 const changepassForm = ref({
-  oldpassword: "",
   newpassword: "",
   cnewpassword: "",
 });
-const showPass = ref(false)
+const showPass = ref(false);
 
 onMounted(() => {
   const user = inject("user");
 
   userdata.value = user;
+
 });
 
 const $q = useQuasar();
@@ -189,20 +194,38 @@ setTimeout(() => {
   $q.loading.hide();
 }, 300);
 
-const capitalize = (str) => {
-  return str.toLowerCase().replace(/\b\w/g, function (char) {
-    return char.toUpperCase();
-  });
-};
+const onSubmit = async () => {
+  const params = {
+    token: "",
+    newPass: changepassForm.value.cnewpassword,
+    id: userdata.value.value.id,
+  };
 
-const onSubmit = () => {
-  changepassForm.value.validate().then((success) => {
-    if (success) {
-      // yay, models are correct
-    } else {
-      // oh no, user has filled in
-      // at least one invalid value
-    }
-  });
+  console.log(userdata.value.value.id)
+
+  if (changepassForm.value.newpassword === changepassForm.value.cnewpassword) {
+    await api.post("/reset-password", params).then((res) => {
+      if (res.data.message[0].st_code == 200) {
+        $q.notify({
+          position: "top",
+          type: "positive",
+          message: res.data.message[0].st_msg,
+        });
+        changepassForm.value = "";
+      } else {
+        $q.notify({
+          position: "bottom",
+          type: "negative",
+          message: res.data.message[0].st_msg,
+        });
+      }
+    });
+  } else {
+    $q.notify({
+      position: "top",
+      type: "warning",
+      message: "Passwords does not match",
+    });
+  }
 };
 </script>

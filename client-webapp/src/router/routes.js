@@ -3,15 +3,17 @@ import MainLayoutVue from "layouts/MainLayout.vue";
 
 const routes = [
   {
-    path: '/home',
-    name: 'home',
+    path: "/home",
+    name: "home",
     component: MainLayoutVue,
     meta: {
       requiresAuth: true,
     },
     children: [
       {
-        path: '', name: 'home', component: () => import("pages/card/CardViewPage.vue"),
+        path: "",
+        name: "home",
+        component: () => import("pages/card/CardViewPage.vue"),
         meta: {
           requiresAuth: true,
         },
@@ -25,8 +27,8 @@ const routes = [
         },
       },
       {
-        path: '/loan-application',
-        name: 'application',
+        path: "/loan-application",
+        name: "application",
         component: () => import("pages/loan/apply/ApplyLoan.vue"),
       },
       {
@@ -72,6 +74,9 @@ const routes = [
     path: "/reset-password",
     name: "resetpassword",
     component: () => import("pages/reset/ResetPasswordPage.vue"),
+    meta: {
+      requiresToken: true,
+    },
   },
 
   // Always leave this as last one,

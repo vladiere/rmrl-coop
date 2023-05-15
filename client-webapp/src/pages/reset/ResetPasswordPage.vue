@@ -76,6 +76,7 @@ const password = ref({
   newPass: "",
   cnewPass: "",
   token: "",
+  id: 0
 });
 
 
@@ -122,12 +123,4 @@ onMounted(() => {
 
 });
 
-watchEffect(async (onInvalidate) => {
-
-  await delay(2000)
-
-  if (Object.keys(password.value.token).length === 0) {
-    route.push("/");
-  }
-})
 </script>

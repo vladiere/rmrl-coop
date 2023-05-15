@@ -17,11 +17,19 @@
         <span>Login</span>
         <form @submit.prevent="handleLogin">
           <input type="text" placeholder="Lastname" v-model="form.lastname" />
-          <input
-            type="password"
+          <q-input
+          :type="isPwd ? 'password' : 'text'"
             placeholder="Password"
             v-model="form.password"
-          />
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
           <div class="links">
             <button>Login</button>
             <h6 class="h4 cursor-pointer" @click="resetpass = true">
@@ -119,6 +127,7 @@ const timestamp = Date.now();
 const router = useRouter();
 const browserName = ref("");
 const resetpass = ref(false);
+const isPwd = ref(true);
 const batt = ref(null);
 
 const formattedDate = date.formatDate(timestamp, "MMMM Do, YYYY");
