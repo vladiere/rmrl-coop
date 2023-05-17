@@ -89,11 +89,10 @@ const columns = [
     sortable: true,
   },
   {
-    name: "description",
-    required: true,
-    label: "Description",
+    name: "formatted_date",
     align: "center",
-    field: "description",
+    label: "Date payed",
+    field: "formatted_date",
     sortable: true,
   },
 ];

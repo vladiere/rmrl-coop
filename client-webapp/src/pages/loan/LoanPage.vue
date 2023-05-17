@@ -68,6 +68,14 @@ const userStore = useUserStore();
 
 const userData = computed(() => userStore.data);
 
+const loader = () => {
+  $q.loading.show();
+
+  setTimeout(() => {
+    stylesLoaded.value = true;
+    $q.loading.hide();
+  }, 300);
+};
 
 
 loader()
@@ -148,14 +156,6 @@ const fetchTransactions = async () => {
     .catch((err) => console.error(err));
 };
 
-const loader = () => {
-  $q.loading.show();
-
-  setTimeout(() => {
-    stylesLoaded.value = true;
-    $q.loading.hide();
-  }, 300);
-};
 </script>
 
 <style scoped></style>

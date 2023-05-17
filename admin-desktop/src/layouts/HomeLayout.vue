@@ -115,7 +115,7 @@ export default defineComponent({
     const $q = useQuasar();
 
     function handleLogout() {
-      localStorage.clear();
+      localStorage.removeItem('token');
       router.push("/");
     }
 

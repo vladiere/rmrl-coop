@@ -181,6 +181,7 @@ const handleLogin = async () => {
         }
       });
     } catch (error) {
+      console.log(error.message)
       $q.notify({
         position: "top",
         type: "warning",

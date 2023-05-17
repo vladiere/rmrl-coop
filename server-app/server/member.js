@@ -17,7 +17,7 @@ function loginmember(req, res) {
     
     db.query('CALL sp_Authenticate_Member(?,?,?,?)', [lastname, ipaddress, browser, 0], (error, results) => {
         if (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: error });
         } else {
             if (results[0][0].ret == 4) {
               res.status(404).json({

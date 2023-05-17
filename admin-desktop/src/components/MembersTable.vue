@@ -119,6 +119,13 @@ const columns = [
     sortable: true,
   },
   {
+    name: "email_add",
+    align: "left",
+    label: "Email Address",
+    field: "email_add",
+    sortable: true,
+  },
+  {
     name: "member_at",
     align: "left",
     label: "Member Since",

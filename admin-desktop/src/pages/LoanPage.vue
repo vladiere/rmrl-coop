@@ -32,6 +32,7 @@ import {
 import MemberToPay from "src/layouts/MemberToPay.vue";
 import { api } from "src/boot/axios";
 import { useQuasar } from 'quasar'
+import { reactive } from 'vue'
 
 defineComponent({
   name: "loanPage",
@@ -39,7 +40,18 @@ defineComponent({
 
 const $q = useQuasar();
 const unread_count = ref(0);
+const state = reactive({
+  isLoading: false,
+});
 
+const setLoading = () => {
+  state.isLoading = true;
+
+  setTimeout(() => {
+    state.isLoading = false;
+    getAllRequest();
+  }, 1000);
+};
 
 const getAllRequest = async () => {
   const config = {
@@ -62,10 +74,17 @@ const getAllRequest = async () => {
 onMounted(() => {
   // getUnreadCount();
   getAllRequest();
+
+  setInterval(() => {
+    setLoading()
+  }, 1000)
 });
 
 watchEffect(() => {
   // getUnreadCount();
-  getAllRequest();
+
+  setTimeout(() => {
+    getAllRequest();
+  }, 1000);
 });
 </script>

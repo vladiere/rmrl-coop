@@ -11,7 +11,7 @@ function sendEmail (req, res) {
     const { email } = req.body;
     
     // check if email exists in database
-    db.query('CALL sp_resetPassword(?,?,?)', [email,'',''], (err, results) => {
+    db.query('CALL sp_resetPassword(?,?,?,?)', [email,'','',0], (err, results) => {
         if (err) {
             res.status(500).json({ message: 'Error retrieving user from database', err });
         } else if (results.length === 0) {
@@ -21,7 +21,7 @@ function sendEmail (req, res) {
             const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, { expiresIn: '10m' });
             
             
-            db.query('CALL sp_resetPassword(?,?,?)', [email, '', token], (err, results) => {
+            db.query('CALL sp_resetPassword(?,?,?,?)', [email, '', token,0], (err, results) => {
                 if (err) {
                     res.status(500).json(err);
                 } else {
@@ -43,7 +43,7 @@ function sendEmail (req, res) {
                             <div style="display:flex; align-items: center; flex-direction:column; gap:10px; margin-top:2rem;">
                                 <h3>RMRL Coop request reset password.</h3>
                                 <p>Click to proceed to reset your password.</p>
-                                <a href="http://localhost:9000/reset-password?auth=${token}" target="_blank">
+                                <a href="http://localhost:9200/reset-password?auth=${token}" target="_blank">
                                     <button style="padding:10px 20px; border:0; outline:none; border-radius:5px; background:#3d7ab8; color:#cedad8;">Click Here</button>
                                 </a>
                             </div>

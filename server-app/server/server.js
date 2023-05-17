@@ -11,7 +11,7 @@ const savings = require('./savings')
 const pettycash = require('./pettycash')
 const reset = require('./reset')
 
-const port = 8080;
+const port = process.env.LOCAL_PORT;
 
 const corsOptions = {
     origin: '*',
